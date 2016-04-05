@@ -6,11 +6,8 @@ public class User {
 	private String myName;
 	private String myUri;
 
-
-
-	
 	public User(String name, String uri, int id) {
-		myId = id; 
+		myId = id;
 		myName = name;
 		myUri = uri;
 	}
