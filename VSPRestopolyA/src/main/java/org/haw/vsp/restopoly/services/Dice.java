@@ -2,6 +2,10 @@ package org.haw.vsp.restopoly.services;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 import spark.Request;
 import spark.Response;
 
@@ -13,7 +17,22 @@ public class Dice {
 		// could be uris
 		String player = request.queryParams("player");
 		String game = request.queryParams("game");
-
-		return (Integer) ThreadLocalRandom.current().nextInt(1, 7);
+		int result = (Integer) ThreadLocalRandom.current().nextInt(1, 7);
+		try {
+			HttpResponse<String> jsonResponse = Unirest.post("http://abq335_docker_1337:4567/events")
+					.queryString("game", game)
+					.queryString("type", "Dice Event")
+					.queryString("name", "Dice Event")
+					.queryString("reason", player + " rolled a " + result)
+					.queryString("resource", request.uri())
+					.queryString("player", player)
+					.queryString("time", System.currentTimeMillis())
+					.asString();
+		} catch (UnirestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return result;
 	}
 }
