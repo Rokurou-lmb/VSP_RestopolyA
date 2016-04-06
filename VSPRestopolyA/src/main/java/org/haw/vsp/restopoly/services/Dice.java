@@ -10,6 +10,7 @@ import spark.Request;
 import spark.Response;
 
 public class Dice {
+	private static final String YELLOW_PAGES = "http://http://141.22.34.15/cnt/172.18.0.5/4567/services/1337";
 
 	public static Integer roll(Request request, Response response) {
 		response.status(200);
@@ -19,7 +20,7 @@ public class Dice {
 		String game = request.queryParams("game");
 		int result = (Integer) ThreadLocalRandom.current().nextInt(1, 7);
 		try {
-			HttpResponse<String> jsonResponse = Unirest.post("http://abq335_docker_1337:4567/events")
+			HttpResponse<String> jsonResponse = Unirest.post("http://abq335_events:4567/events")
 					.queryString("game", game)
 					.queryString("type", "Dice Event")
 					.queryString("name", "Dice Event")
