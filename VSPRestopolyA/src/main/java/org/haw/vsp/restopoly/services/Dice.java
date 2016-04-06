@@ -33,7 +33,6 @@ public class Dice {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return result;
 	}
 }
