@@ -2,7 +2,7 @@ package org.haw.vsp.restopoly;
 
 import static spark.Spark.*;
 
-import org.haw.vsp.restopoly.entity.Dice;
+import org.haw.vsp.restopoly.services.Dice;
 import org.haw.vsp.restopoly.services.Users;
 
 public class StartUp {

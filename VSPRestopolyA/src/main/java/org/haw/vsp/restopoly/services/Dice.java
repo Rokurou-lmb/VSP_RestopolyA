@@ -1,4 +1,4 @@
-package org.haw.vsp.restopoly.entity;
+package org.haw.vsp.restopoly.services;
 
 import java.util.concurrent.ThreadLocalRandom;
 

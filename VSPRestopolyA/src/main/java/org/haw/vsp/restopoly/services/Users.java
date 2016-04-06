@@ -48,9 +48,9 @@ public class Users {
 
 	/**
 	 * Registers a new player with the given information and the given ID, then
-	 * returns the newly registered user as a JSON-String
+	 * returns the newly registered user as a JSON-String. If one of the or all parameters were empty, the existing data is used.
 	 * 
-	 * @return JSON-String representation of the newly registered user
+	 * @return empty String
 	 */
 	public static String putUser(Request request, Response response) {
 		Integer playerId = Integer.parseInt(request.params(":id"));
@@ -58,13 +58,12 @@ public class Users {
 		String playerUri = request.queryParams("uri");
 		if (myUsers.containsKey(playerId)) {
 			User user = myUsers.get(playerId);
-			user.setMyName(playerName);
-			user.setMyUri(playerUri);
+			user.setMyName((playerName == null || playerName.equals("")) ? user.getMyName() : playerName);
+			user.setMyUri((playerUri == null || playerUri.equals("")) ? user.getMyUri() : playerUri);
 		} else {
 			User newUser = new User(playerName, playerUri, playerId);
 			myUsers.put(playerId, newUser);
 		}
-
 		return "";
 	}
 
