@@ -13,10 +13,19 @@ import spark.Request;
 import spark.Response;
 
 public class Users {
+	
+	public static final String NAME = "UsersService";
+	
+	public static final String DESCRIPTION = "A service for managing users";
+	
+	public static final String SERVICE_NAME = "users";
+	
+	public static final String SERVICE_URI = "users";
+	
+	public static final String YELLOW_PAGE_ID = "2";
 
 	private static Gson myGson = new Gson();
-	private static int myIdTracker = 0;
-	private static Map<Integer, User> myUsers = new HashMap<>();
+	private static Map<String, User> myUsers = new HashMap<>();
 
 	/**
 	 * Registers a new player with the posted information, then returns the
@@ -25,14 +34,8 @@ public class Users {
 	 * @return JSON-String representation of the newly registered user
 	 */
 	public static String postUser(Request request, Response response) {
-		while (myUsers.containsKey(myIdTracker)) {
-			myIdTracker++;
-		}
-		String playerName = request.queryParams("name");
-		String playerUri = request.queryParams("uri");
-		User newUser = new User(playerName, playerUri, myIdTracker);
-		myUsers.put(myIdTracker, newUser);
-		myIdTracker++;
+		User newUser = myGson.fromJson(request.body(), User.class);
+		myUsers.put(newUser.getId(), newUser);
 		return myGson.toJson(newUser);
 	}
 
@@ -53,17 +56,21 @@ public class Users {
 	 * @return empty String
 	 */
 	public static String putUser(Request request, Response response) {
-		Integer playerId = Integer.parseInt(request.params(":id"));
-		String playerName = request.queryParams("name");
-		String playerUri = request.queryParams("uri");
-		if (myUsers.containsKey(playerId)) {
-			User user = myUsers.get(playerId);
-			user.setMyName((playerName == null || playerName.equals("")) ? user.getMyName() : playerName);
-			user.setMyUri((playerUri == null || playerUri.equals("")) ? user.getMyUri() : playerUri);
-		} else {
-			User newUser = new User(playerName, playerUri, playerId);
-			myUsers.put(playerId, newUser);
+		User newUser = myGson.fromJson(request.body(), User.class);
+
+		String newPlayerId = request.params(":id");
+		String newPlayerName = newUser.getName();
+		String newPlayerUri = newUser.getUri();
+
+		if (myUsers.containsKey(newPlayerId)) {
+			User user = myUsers.get(newPlayerId);
+
+			//TODO find out if Gson initializes with empty String or null
+			user.setId((newPlayerId == null || newPlayerId.equals("")) ? user.getId() : newPlayerId);
+			user.setName((newPlayerName == null || newPlayerName.equals("")) ? user.getName() : newPlayerName);
+			user.setUri((newPlayerUri == null || newPlayerUri.equals("")) ? user.getUri() : newPlayerUri);
 		}
+
 		return "";
 	}
 

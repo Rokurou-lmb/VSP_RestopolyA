@@ -2,38 +2,38 @@ package org.haw.vsp.restopoly.entity;
 
 public class User {
 
-	private int myId;
+	private String myId;
 	private String myName;
-	private String myUri;
+	private String myClientUri;
 
-	public User(String name, String uri, int id) {
+	public User(String name, String clientUri, String id) {
 		myId = id;
 		myName = name;
-		myUri = uri;
+		myClientUri = clientUri;
 	}
 
-	public int getMyId() {
+	public String getId() {
 		return myId;
 	}
 
-	public void setMyId(int myId) {
-		this.myId = myId;
+	public void setId(String id) {
+		myId = id;
 	}
 
-	public String getMyName() {
+	public String getName() {
 		return myName;
 	}
 
-	public void setMyName(String myName) {
-		this.myName = myName;
+	public void setName(String name) {
+		myName = name;
 	}
 
-	public String getMyUri() {
-		return myUri;
+	public String getUri() {
+		return myClientUri;
 	}
 
-	public void setMyUri(String myUri) {
-		this.myUri = myUri;
+	public void setUri(String clientUri) {
+		myClientUri = clientUri;
 	}
 
 }

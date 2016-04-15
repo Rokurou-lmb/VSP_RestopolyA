@@ -1,24 +1,28 @@
 package org.haw.vsp.restopoly;
 
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.post;
+import static spark.Spark.put;
+
 import org.haw.vsp.restopoly.services.Dice;
 import org.haw.vsp.restopoly.services.Users;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import static spark.Spark.*;
 
 public class StartUp {
 
-	private static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
+	protected static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
 
-	private static final String SERVICE_URI = "http://abl459-services:4567/";
+	protected static final String SERVICE_URI = "http://abl459-services:4567/";
 
 	public static void main(String[] args) {
 		get("/hello", (request, response) -> "Hello World");
 		get("/dice", Dice::roll);
 
-		registerService("DiceService", "A service for rolling a dice", "dice", "dice", 4);
+		registerService(Dice.NAME, Dice.DESCRIPTION, Dice.SERVICE_NAME, Dice.SERVICE_URI, Dice.YELLOW_PAGE_ID);
 
 		get("/users", Users::getUsers);
 		post("/users", Users::postUser);
@@ -26,20 +30,21 @@ public class StartUp {
 		delete("/users/:id", Users::deleteUser);
 		put("/users/:id", Users::putUser);
 
-		registerService("UsersService", "A service for managing users", "users", "users", 2);
+		registerService(Users.NAME, Users.DESCRIPTION, Users.SERVICE_NAME, Users.SERVICE_URI, Users.YELLOW_PAGE_ID);
 
 	}
 
-	private static void registerService(String name, String description, String service, String uri, int id) {
+	private static void registerService(String name, String description, String serviceName, String uri,
+			String yellowPageId) {
 		try {
 			JSONObject json = new JSONObject();
 			json.put("name", name);
 			json.put("description", description);
-			json.put("service", service);
+			json.put("service", serviceName);
 			json.put("uri", SERVICE_URI + uri);
-			String yellowURI = YELLOW_PAGES + "/" +Integer.toString(id);
-			String result = Unirest.put(yellowURI).header("Content-Type", "application/json")
-					.body(json).asString().getBody();
+			String yellowURI = YELLOW_PAGES + "/" + yellowPageId;
+			String result = Unirest.put(yellowURI).header("Content-Type", "application/json").body(json).asString()
+					.getBody();
 			System.out.println("Yellow-Pages Registration wurde versendet, an : " + yellowURI + "!");
 			System.out.println("Versendetes JSON: " + json.toString());
 			System.out.println("Result: " + result);

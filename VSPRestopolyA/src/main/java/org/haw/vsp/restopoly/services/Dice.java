@@ -10,8 +10,17 @@ import spark.Request;
 import spark.Response;
 
 public class Dice {
-	private static final String YELLOW_PAGES = "http://http://141.22.34.15/cnt/172.18.0.5/4567/services/1337";
-
+	
+	public static final String NAME = "DiceService";
+	
+	public static final String DESCRIPTION = "A service for rolling a dice";
+	
+	public static final String SERVICE_NAME = "dice";
+	
+	public static final String SERVICE_URI = "dice";
+	
+	public static final String YELLOW_PAGE_ID = "4";
+	
 	public static Integer roll(Request request, Response response) {
 		response.status(200);
 		response.type("application/json");
@@ -30,7 +39,6 @@ public class Dice {
 					.queryString("time", System.currentTimeMillis())
 					.asString();
 		} catch (UnirestException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
