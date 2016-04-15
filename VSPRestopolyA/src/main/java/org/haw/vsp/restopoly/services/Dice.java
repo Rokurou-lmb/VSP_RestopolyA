@@ -20,7 +20,7 @@ public class Dice {
 		String game = request.queryParams("game");
 		int result = (Integer) ThreadLocalRandom.current().nextInt(1, 7);
 		try {
-			HttpResponse<String> jsonResponse = Unirest.post("http://abq335_events:4567/events")
+			HttpResponse<String> jsonResponse = Unirest.post("http://abs969-events:4567/events")
 					.queryString("game", game)
 					.queryString("type", "Dice Event")
 					.queryString("name", "Dice Event")
