@@ -1,11 +1,10 @@
 package org.haw.vsp.restopoly.services;
 
 import java.util.concurrent.ThreadLocalRandom;
-
+import org.json.JSONObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import spark.Request;
 import spark.Response;
 
@@ -29,15 +28,16 @@ public class Dice {
 		String game = request.queryParams("game");
 		int result = (Integer) ThreadLocalRandom.current().nextInt(1, 7);
 		try {
-			HttpResponse<String> jsonResponse = Unirest.post("http://abs969-events:4567/events")
-					.queryString("game", game)
-					.queryString("type", "Dice Event")
-					.queryString("name", "Dice Event")
-					.queryString("reason", player + " rolled a " + result)
-					.queryString("resource", request.uri())
-					.queryString("player", player)
-					.queryString("time", System.currentTimeMillis())
-					.asString();
+			JSONObject eventJson = new JSONObject();
+			eventJson.put("game", game);
+			eventJson.put("type", "Dice Roll");
+			eventJson.put("name", "Dice Event");
+			eventJson.put("reason", player + " rolled a " + result);
+			eventJson.put("resource", request.uri());
+			eventJson.put("player", player);
+			eventJson.put("time", System.currentTimeMillis());
+			
+			Unirest.post("http://abs969-events:4567/events").header("Content-Type", "application/json").body(eventJson).asString();
 		} catch (UnirestException e) {
 			e.printStackTrace();
 		}
