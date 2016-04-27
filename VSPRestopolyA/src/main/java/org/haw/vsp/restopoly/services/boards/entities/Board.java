@@ -6,8 +6,8 @@ import java.util.List;
 public class Board {
 
 	private List<Field> myFields;
-	
 
+	private String gameUri;
 
 	public Board() {
 		myFields = new ArrayList<Board.Field>();
@@ -15,24 +15,13 @@ public class Board {
 			//TODO: Spielfeld anlegen
 		}
 	}
-	
-	
-	
-	
-
-	
-
-
-
-
-
-
-
-
-
-
 
 	private class Field {
+
+	}
+
+	public void setGame(String gameUri) {
+		this.gameUri = gameUri;
 
 	}
 }
