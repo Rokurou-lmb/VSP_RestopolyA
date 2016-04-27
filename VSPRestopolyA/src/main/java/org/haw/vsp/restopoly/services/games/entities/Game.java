@@ -37,10 +37,18 @@ public class Game {
 		}
 	}
 	
+	/**
+	 * @param playerId
+	 * @return true if player is ready false otherwise
+	 */
 	public boolean isPlayerReady(String playerId) {
 		return myPlayers.get(playerId).isReady();
 	}
 	
+	/**
+	 * Adds a Player to the Game
+	 * @param player
+	 */
 	public void addPlayer(Player player) {
 		myPlayers.put(player.getId(), player);
 	}
