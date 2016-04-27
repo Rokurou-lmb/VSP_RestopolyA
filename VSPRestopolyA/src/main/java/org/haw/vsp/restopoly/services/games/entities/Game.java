@@ -1,6 +1,9 @@
 package org.haw.vsp.restopoly.services.games.entities;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -14,7 +17,9 @@ public class Game {
 	private String myName;
 	private String myPlayersUri;
 	private Map<String, Player> myPlayers;
-	private boolean myGameStarted;
+	private List<Player> myPlayerOrdering;
+	private State myGameState;
+
 	private Map<String, String> myServiceUris;
 	private Map<String, String> myComponentsUris;
 	
@@ -30,8 +35,6 @@ public class Game {
 		
 		myPlayers = new HashMap<>();
 	}
-
-
 
 	public Player getCurrentPlayer() {
 		return myCurrentPlayer;
@@ -70,56 +73,43 @@ public class Game {
 		myPlayers.put(player.getId(), player);
 	}
 	
-	public String getId() {
-		return myId;
-	}
-
-	public void setMyId(String myId) {
-		this.myId = myId;
+	public String getPlayersUri() {
+		return myPlayersUri;
 	}
 
 	public String getName() {
 		return myName;
 	}
 
-	public void setName(String name) {
-		myName = name;
+	public String getId() {
+		return myId;
 	}
-
-	public String getPlayersUri() {
-		return myPlayersUri;
-	}
-
-	public void setPlayersUri(String playersUri) {
-		myPlayersUri = playersUri;
-	}
-
+	
 	public Map<String, String> getMyServiceUris() {
 		return myServiceUris;
 	}
 
-	public void setServiceUris(Map<String, String> serviceUris) {
-		myServiceUris = serviceUris;
-	}
-
-	public Player getMyCurrentPlayer() {
-		return myCurrentPlayer;
-	}
-
-	public void setMyCurrentPlayer(Player myCurrentPlayer) {
-		this.myCurrentPlayer = myCurrentPlayer;
-	}
-	
 	public Map<String, String> getMyComponentsUris() {
 		return myComponentsUris;
 	}
-
-	public void setComponentsUris(Map<String, String> componentsUris) {
-		myComponentsUris = componentsUris;
+	
+	public Collection<Player> getPlayers() {
+		return myPlayers.values();
 	}
-
-	public Map<String, Player> getPlayers() {
-		return myPlayers;
+	
+	public Player getPlayer(String playerId) {
+		return myPlayers.get(playerId);
+	}
+	
+	public State getStatus() {
+		return myGameState;
+	}
+	
+	public void setStatus(State state) {
+		if(state == State.RUNNING) {
+			myPlayerOrdering = new ArrayList<>(myPlayers.values());
+			myCurrentPlayer = myPlayerOrdering.get(0); //TODO maybe use a queue?
+		}
 	}
 
 	public static String getJsonString(Game game) {
@@ -131,7 +121,7 @@ public class Game {
 		json.addProperty("components", getComponentsAsJsonObject(game));
 		return json.getAsString();
 	}
-	
+
 	public static String getServicesAsJsonObject(Game game) {
 		JsonObject json = new JsonObject();
 		Set<Entry<String, String>> entries = game.getMyServiceUris().entrySet();
@@ -140,7 +130,7 @@ public class Game {
 		}
 		return json.getAsString();
 	}
-	
+
 	public static String getComponentsAsJsonObject(Game game) {
 		JsonObject json = new JsonObject();
 		Set<Entry<String, String>> entries = game.getMyComponentsUris().entrySet();

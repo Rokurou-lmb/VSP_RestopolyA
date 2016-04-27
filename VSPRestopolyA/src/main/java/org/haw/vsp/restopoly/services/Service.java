@@ -1,6 +1,17 @@
 package org.haw.vsp.restopoly.services;
 
 public abstract class Service {
+	
+	public static final String GROUP_NAME = "42_1337_69";
+	
+	public static final String NAME = "DefaultName";
+	
+	public static final String DESCRIPTION = "DefaultDescription";
+	
+	public static final String SERVICE_NAME = "default";
+	
+	public static final String SERVICE_URI = "/default";
+	
 	/**
 	 * Value for service calls the return no body.
 	 */
