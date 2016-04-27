@@ -10,7 +10,7 @@ import com.google.gson.JsonParser;
 import spark.Request;
 import spark.Response;
 
-public class Users {
+public class Users extends Service{
 	
 	public static final String NAME = "UsersService";
 	
@@ -19,8 +19,6 @@ public class Users {
 	public static final String SERVICE_NAME = "users";
 	
 	public static final String SERVICE_URI = "/users";
-	
-	public static final String YELLOW_PAGE_ID = "2";
 	
 	private static final Gson myGson = new Gson();
 	private static final JsonParser myParser = new JsonParser();
@@ -35,13 +33,19 @@ public class Users {
 		String name = json.get("name").getAsString();
 		String clientUri = json.get("uri").getAsString();
 		String id = SERVICE_URI + "/" + name;
-		if(myUsers.containsKey(id)) {
-			//TODO do something to handle conflicts.
-		}
 		
 		User newUser = new User(name, clientUri, id);
-		myUsers.put(newUser.getId(), newUser);
-		return User.getJsonString(newUser);
+		
+		response.status(STATUS_CONFLICT);
+		String responseString = "";
+		
+		if(!myUsers.containsKey(id)) {
+			myUsers.put(newUser.getId(), newUser);
+			responseString = User.getJsonString(newUser);
+			response.status(STATUS_CREATED);
+			response.header("Location", id);
+		}
+		return responseString;
 	}
 	
 	/**
@@ -60,10 +64,10 @@ public class Users {
 	 */
 	public static String getUser(Request request, Response response) {
 		User user = getUserById(request);
-		response.status(404);
+		response.status(STATUS_NOT_FOUND);
 		String responseString = "";
 		if(user != null) {
-			response.status(200);
+			response.status(STATUS_OK);
 			responseString = User.getJsonString(user);
 		}
 		return responseString;
@@ -80,8 +84,10 @@ public class Users {
 		String newId = parseUserIdFromRequest(request);
 		String newName = json.get("name").getAsString();
 		String newClientUri = json.get("uri").getAsString();
+		response.status(STATUS_CREATED);
 		
 		if(myUsers.containsKey(newId)) {
+			response.status(STATUS_OK);
 			User user = myUsers.get(newId);
 			
 			newId = ((newId == null) ? user.getId() : newId);
@@ -90,6 +96,7 @@ public class Users {
 		}
 		newUser = new User(newName, newClientUri, newId);
 		myUsers.put(newId, newUser);
+		response.header("Location", newUser.getId());
 		return Service.NO_RESPONSE;
 	}
 	

@@ -3,13 +3,10 @@ package org.haw.vsp.restopoly.services.boards;
 import java.util.List;
 
 import org.haw.vsp.restopoly.services.boards.entities.Board;
-import org.haw.vsp.restopoly.services.games.Games;
-import org.haw.vsp.restopoly.services.games.entities.Game;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mashape.unirest.http.JsonNode;
 
 import spark.Request;
 import spark.Response;

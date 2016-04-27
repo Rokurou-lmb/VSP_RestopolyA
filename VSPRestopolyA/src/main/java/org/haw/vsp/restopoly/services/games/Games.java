@@ -1,87 +1,197 @@
 package org.haw.vsp.restopoly.services.games;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
 import org.haw.vsp.restopoly.services.Service;
 import org.haw.vsp.restopoly.services.games.entities.Game;
 import org.haw.vsp.restopoly.services.games.entities.Player;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import spark.Request;
 import spark.Response;
 
-public class Games {
+public class Games extends Service{
+	
+	public static final String NAME = "GamesService";
+	
+	public static final String DESCRIPTION = "A service for managing games";
+	
+	public static final String SERVICE_NAME = "games";
+	
+	public static final String SERVICE_URI = "/games";
+	
 	private static Map<String, Game> myGames = new HashMap<>();
 	private static Gson myGson = new Gson();
-
-	public Games() {
-	}
+	private static JsonParser myParser = new JsonParser();
 
 	public static String getGames(Request request, Response response) {
-		return myGson.toJson(myGames.values());
+		return myGson.toJson(myGames.values().stream()
+				.map((game) -> Game.getJsonString(game))
+				.toArray(String[]::new));
 	}
 
-	public static String postGames(Request request, Response response) {
-		Game game = new Game();
-		Game newGame = myGson.fromJson(request.body(), Game.class);
-		//TODO: create new game with optional parameters
-		response.status(201);
+	public static String postGame(Request request, Response response) {
+		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
+		String id = getJsonAttribute(json, "id");
+		String name = getJsonAttribute(json, "name");
+		
+		JsonObject servicesJson = json.get("services").getAsJsonObject();
+		JsonObject componentsJson = json.get("components").getAsJsonObject();
+		
+		Map<String, String> services = getMapFromJson(servicesJson);
+		Map<String, String> components = getMapFromJson(componentsJson);
+		
+		Game newGame = new Game(id, name, services, components);
+		myGames.put(newGame.getId(), newGame);
+
+		response.status(STATUS_CREATED);
+		response.header("Location", newGame.getId());
 		return "";
 	}
-
-	public static String createPlayer(Request request, Response response) {
+	
+	public static String getGame(Request request, Response response) {
 		String gameId = request.params(":gameId");
-		Player newPlayer = myGson.fromJson(request.body(), Player.class);
-
-		newPlayer.setReady((newPlayer.isReady() == null) ? false : newPlayer.isReady());
-		newPlayer.setPawn((newPlayer.getPawn() == null) ? getNewDefaultPawn() : newPlayer.getPawn());
-		newPlayer.setAccount((newPlayer.getAccount() == null) ? getNewAccount() : newPlayer.getAccount() );
 		
-		Game game = myGames.get(gameId);
-		game.addPlayer(newPlayer);
-		return Service.NO_RESPONSE;
+		String responseString = "";
+		try {
+			Game game = getGameById(gameId);
+			responseString = Game.getJsonString(game);
+		} catch (IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		
+		return responseString;
+	}
+	
+	public static String getPlayers(Request request, Response response) {
+		String gameId = request.params(":gameId");
+		
+		String responseString = "";
+		try {
+			Game game = getGameById(gameId);
+			Collection<Player> players = game.getPlayers().values();
+			responseString = myGson.toJson(players.stream()
+					.map((player) -> player.getId())
+					.toArray());
+		} catch (IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		return responseString;
+	}
+	
+	public static String postPlayer(Request request, Response response) {
+		String gameId = request.params(":gameId");
+		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
+		String id = getJsonAttribute(json, "id");
+		String user = getJsonAttribute(json, "user");
+		String pawn = getJsonAttribute(json, "pawn");
+		String account = getJsonAttribute(json, "account");
+		
+		pawn = (pawn == null) ? getNewDefaultPawn() : pawn ;
+		account = (account == null) ? getNewAccount() : account;
+		
+		Player newPlayer = new Player(user, id, pawn, account);
+		
+		response.status(STATUS_CREATED);
+		response.header("Location", newPlayer.getId()); //TODO give fully classified uri(test if  spark fully qualifies relative uris)
+		
+		try {
+			Game game = getGameById(gameId);
+			game.addPlayer(newPlayer);
+		} catch(IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		return NO_RESPONSE;
+	}
+	
+	public static String getPlayer(Request request, Response response) {
+		String gameId = request.params(":gameId");
+		String playerId = request.params(":playerId");
+
+		String responseString = "";
+		try {
+			Game game = getGameById(gameId);
+			Player player = game.getPlayers().get(playerId);
+			responseString = Player.getJsonString(player);
+		} catch (IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		return responseString;
 	}
 
 	public static String putPlayerIsReady(Request request, Response response) {
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
 		
-		Game game = myGames.get(gameId);
-		game.setPlayerReady(playerId);
+		response.status(STATUS_OK);
+		try {
+			Game game = getGameById(gameId);
+			game.setPlayerReady(playerId);
+		} catch(IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
 		
-		return Service.NO_RESPONSE;
+		return NO_RESPONSE;
 	}
 
 	public static String getPlayerIsReady(Request request, Response response) {
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
 		
-		Game game = myGames.get(gameId);
-		Boolean ready = game.isPlayerReady(playerId);
+		String responseString = "";
+		Boolean ready;
+		try {
+			Game game = getGameById(gameId);
+			ready = game.isPlayerReady(playerId);
+			responseString = myGson.toJson(ready);
+		} catch(IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
 		
-		return myGson.toJson(ready);
+		return responseString;
 	}
 
 	public static String getCurrentPlayer(Request request, Response response) {
 		String gameId = request.params(":gameId");
-		Game game = myGames.get(gameId);
-
-		return myGson.toJson(game.getCurrentPlayer());
+		Player player = null;
+		try {
+			Game game = getGameById(gameId);
+			player = game.getCurrentPlayer();
+		} catch(IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		return Player.getJsonString(player);
 	}
 
 	public static String setPlayerReady(Request request, Response response) {
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
-
-		Game game = myGames.get(gameId);
-		boolean ready;
+		String responseString = "";
+		
 		try {
+			Game game = getGameById(gameId);
 			game.setPlayerReady(playerId);
-			ready = true;
-		} catch (IllegalArgumentException e) {
-			ready = false;
+			responseString = myGson.toJson(true);
+		} catch(IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
 		}
+		return responseString;
+	}
 
-		return myGson.toJson(ready);
+	private static Map<String, String> getMapFromJson(JsonObject json) {
+		Map<String, String> map = new HashMap<>();
+		
+		for (Entry<String, JsonElement> jsonEntry : json.entrySet()) {
+			map.put(jsonEntry.getKey(), jsonEntry.getValue().getAsString());
+		}
+		return map;
 	}
 	
 	/**
@@ -100,5 +210,23 @@ public class Games {
 	private static String getNewDefaultPawn() {
 		return null;
 		//TODO implement
+	}
+	
+	/**
+	 * Gets the attribute of the given identifier from {@code json}
+	 * @param json
+	 * @param identifier
+	 * @return The attribute, or {@code null} if none was found.
+	 */
+	private static String getJsonAttribute(JsonObject json, String identifier) {
+		return json.get(identifier).getAsString();
+	}
+	
+	private static Game getGameById(String gameId) throws IllegalArgumentException{
+		Game game = myGames.get(gameId);
+		if(game == null) {
+			throw new IllegalArgumentException();
+		}
+		return game;
 	}
 }

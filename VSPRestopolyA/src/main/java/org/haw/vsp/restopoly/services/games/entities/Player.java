@@ -1,5 +1,9 @@
 package org.haw.vsp.restopoly.services.games.entities;
 
+import org.haw.vsp.restopoly.services.games.Games;
+
+import com.google.gson.JsonObject;
+
 public class Player {
 
 	private String myUser;
@@ -8,6 +12,15 @@ public class Player {
 	private String myAccount;
 	private Boolean myReadiness;
 	private String myReadinessService;
+	
+	public Player(String user, String id, String pawn, String account) {
+		myUser = user;
+		myId = id;
+		myPawn = pawn;
+		myAccount = account;
+		myReadiness = false;
+		myReadinessService = Games.SERVICE_URI + "/players/" + myId + "/ready";
+	}
 	
 	public String getUser() {
 		return myUser;
@@ -44,5 +57,16 @@ public class Player {
 	}
 	public void setReadinessService(String readinessService) {
 		myReadinessService = readinessService;
+	}
+
+	public static String getJsonString(Player player) {
+		JsonObject json = new JsonObject();
+		json.addProperty("id", player.getId());
+		json.addProperty("user", player.getUser());
+		json.addProperty("pawn", player.getPawn());
+		json.addProperty("account", player.getAccount());
+		json.addProperty("ready", player.getReadinessService());
+		
+		return json.getAsString();
 	}
 }

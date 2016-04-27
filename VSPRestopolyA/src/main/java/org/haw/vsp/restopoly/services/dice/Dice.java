@@ -20,8 +20,6 @@ public class Dice {
 	
 	public static final String SERVICE_URI = "/dice";
 	
-	public static final String YELLOW_PAGE_ID = "4";
-	
 	public static Integer roll(Request request, Response response) {
 		response.status(200);
 		response.type("application/json");
