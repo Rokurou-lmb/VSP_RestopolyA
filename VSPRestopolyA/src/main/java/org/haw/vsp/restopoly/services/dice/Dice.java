@@ -1,6 +1,12 @@
 package org.haw.vsp.restopoly.services.dice;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.haw.vs.praktikum.gwln.praktikum1.b.Event;
+import org.haw.vs.praktikum.gwln.praktikum1.b.EventManagerRestClient;
+import org.haw.vs.praktikum.gwln.praktikum1.b.EventManagerWebService;
+import org.haw.vs.praktikum.gwln.yellowpages.Service;
+import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
 import org.json.JSONObject;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -26,17 +32,23 @@ public class Dice {
 		String player = request.queryParams("player");
 		String game = request.queryParams("game");
 		int result = (Integer) ThreadLocalRandom.current().nextInt(1, 7);
+		
 		try {
-			JSONObject eventJson = new JSONObject();
-			eventJson.put("game", game);
-			eventJson.put("type", "Dice Roll");
-			eventJson.put("name", "Dice Event");
-			eventJson.put("reason", player + " rolled a " + result);
-			eventJson.put("resource", request.uri());
-			eventJson.put("player", player);
-			eventJson.put("time", System.currentTimeMillis());
-			
-			Unirest.post("http://abs969-events:4567/events").header("Content-Type", "application/json").body(eventJson).asString();
+			YellowPagesRestClient yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+			List<Service> services = yellow.getServicesOfName("Event Manager Service 42_1337_69");
+			Service service = null;
+			for(Service s : services) {
+				if("running".equals(s.getStatus())) {
+					service = s;
+					break;
+				}
+			}
+			if(service != null) {
+				EventManagerRestClient events = new EventManagerRestClient(service.getUri());
+				events.postEvent(new Event(game, "Dice Roll", "Dice Event", player + " rolled a " + result, request.uri(), player, String.valueOf(System.currentTimeMillis())));
+			} else {
+				System.out.println("[WARNING] Es wurde kein Event-Service gefunden, das Event wird nicht übertragen!");
+			}
 		} catch (UnirestException e) {
 			e.printStackTrace();
 		}
