@@ -4,11 +4,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.haw.vs.praktikum.gwln.praktikum1.b.Event;
 import org.haw.vs.praktikum.gwln.praktikum1.b.EventManagerRestClient;
-import org.haw.vs.praktikum.gwln.praktikum1.b.EventManagerWebService;
 import org.haw.vs.praktikum.gwln.yellowpages.Service;
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
-import org.json.JSONObject;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import spark.Request;
 import spark.Response;
@@ -46,8 +43,9 @@ public class Dice {
 			if(service != null) {
 				EventManagerRestClient events = new EventManagerRestClient(service.getUri());
 				events.postEvent(new Event(game, "Dice Roll", "Dice Event", player + " rolled a " + result, request.uri(), player, String.valueOf(System.currentTimeMillis())));
+				System.out.println("[!!! SUCCESS] Event erfolgreich gemeldet!");
 			} else {
-				System.out.println("[WARNING] Es wurde kein Event-Service gefunden, das Event wird nicht übertragen!");
+				System.out.println("[!!! WARNING] Es wurde kein Event-Service gefunden, das Event wird nicht übertragen!");
 			}
 		} catch (UnirestException e) {
 			e.printStackTrace();
