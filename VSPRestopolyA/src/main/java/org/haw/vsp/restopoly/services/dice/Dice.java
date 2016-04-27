@@ -1,8 +1,7 @@
-package org.haw.vsp.restopoly.services;
+package org.haw.vsp.restopoly.services.dice;
 
 import java.util.concurrent.ThreadLocalRandom;
 import org.json.JSONObject;
-import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import spark.Request;
@@ -16,7 +15,7 @@ public class Dice {
 	
 	public static final String SERVICE_NAME = "dice";
 	
-	public static final String SERVICE_URI = "dice";
+	public static final String SERVICE_URI = "/dice";
 	
 	public static final String YELLOW_PAGE_ID = "4";
 	

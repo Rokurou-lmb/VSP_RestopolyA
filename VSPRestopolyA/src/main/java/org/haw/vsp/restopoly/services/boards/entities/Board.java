@@ -1,4 +1,4 @@
-package org.haw.vsp.restopoly.entity;
+package org.haw.vsp.restopoly.services.boards.entities;
 
 import java.util.ArrayList;
 import java.util.List;

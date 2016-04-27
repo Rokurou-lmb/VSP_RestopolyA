@@ -1,24 +1,23 @@
-package org.haw.vsp.restopoly.entity;
+package org.haw.vsp.restopoly.services.games.entities;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class Game {
 	private String myId;
+	private String name;
 	private Map<String, Player> myPlayers;
 	private boolean myGameStarted;
-	private Set<String> myServicesUris;
-	private Set<String> myComponentsUris;
+	private Map<String, String> myServicesUris;
+//	private Set<String> myComponentsUris; //TODO find out if components are really needed?
 	private Player myCurrentPlayer;
 	
 	public Game() {
 		myId = "0";
 		myPlayers = new HashMap<>();
 		myGameStarted = false;
-		myServicesUris = new HashSet<>();
-		myComponentsUris = new HashSet<>();
+		myServicesUris = new HashMap<>();
+//		myComponentsUris = new HashSet<>();
 	}
 
 	public Player getCurrentPlayer() {
@@ -32,9 +31,17 @@ public class Game {
 	public void setPlayerReady(String playerId) throws IllegalArgumentException{
 		Player player = myPlayers.get(playerId);
 		if (player != null) {
-			player.setReadiness(true);
+			player.setReady(true);
 		} else {
 			throw new IllegalArgumentException("Player not found!");
 		}
+	}
+	
+	public boolean isPlayerReady(String playerId) {
+		return myPlayers.get(playerId).isReady();
+	}
+	
+	public void addPlayer(Player player) {
+		myPlayers.put(player.getId(), player);
 	}
 }

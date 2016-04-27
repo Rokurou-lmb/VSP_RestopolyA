@@ -1,12 +1,12 @@
-package org.haw.vsp.restopoly.entity;
+package org.haw.vsp.restopoly.services.games.entities;
 
 public class Player {
 
 	private String myUser;
-	private int myId;
-	private Pawn myPawn;
+	private String myId;
+	private String myPawn;
 	private String myAccount;
-	private boolean myReadiness;
+	private Boolean myReadiness;
 	private String myReadinessService;
 	
 	public String getUser() {
@@ -15,16 +15,16 @@ public class Player {
 	public void setUser(String user) {
 		myUser = user;
 	}
-	public int getId() {
+	public String getId() {
 		return myId;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		myId = id;
 	}
-	public Pawn getPawn() {
+	public String getPawn() {
 		return myPawn;
 	}
-	public void setPawn(Pawn pawn) {
+	public void setPawn(String pawn) {
 		myPawn = pawn;
 	}
 	public String getAccount() {
@@ -33,10 +33,10 @@ public class Player {
 	public void setAccount(String account) {
 		myAccount = account;
 	}
-	public boolean isReadiness() {
+	public Boolean isReady() {
 		return myReadiness;
 	}
-	public void setReadiness(boolean readiness) {
+	public void setReady(Boolean readiness) {
 		myReadiness = readiness;
 	}
 	public String getReadinessService() {

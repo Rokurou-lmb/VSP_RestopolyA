@@ -4,9 +4,8 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
-
-import org.haw.vsp.restopoly.services.Dice;
-import org.haw.vsp.restopoly.services.Users;
+import org.haw.vsp.restopoly.services.dice.Dice;
+import org.haw.vsp.restopoly.services.users.Users;
 import org.json.JSONObject;
 
 import com.mashape.unirest.http.Unirest;
@@ -16,7 +15,7 @@ public class StartUp {
 
 	protected static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
 
-	protected static final String SERVICE_URI = "http://abl459-services:4567/";
+	protected static final String SERVICE_URI = "http://abl459-services:4567";
 
 	public static void main(String[] args) {
 		get("/hello", (request, response) -> "Hello World");
