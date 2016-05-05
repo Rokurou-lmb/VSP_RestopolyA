@@ -82,7 +82,7 @@ public class Games extends Service {
 	}
 	
 	public static String putStatus(Request request, Response response) {
-		response.status(500);
+		response.status(INTERNAL_SERVER_ERROR);
 		return ""; //TODO implement
 	}
 

@@ -7,9 +7,11 @@ public class Board {
 
 	private List<Field> myFields;
 
-	private String gameUri;
-
-	public Board() {
+	private String myGameUri;
+	
+	public Board(String gameUri) {
+		myGameUri = gameUri;
+		
 		myFields = new ArrayList<Board.Field>();
 		for (int i = 0; i < 40; i++) {
 			//TODO: Spielfeld anlegen
@@ -21,7 +23,12 @@ public class Board {
 	}
 
 	public void setGame(String gameUri) {
-		this.gameUri = gameUri;
+		myGameUri = gameUri;
 
+	}
+
+	
+	public String getGameUriOfBoard(){
+		return myGameUri;
 	}
 }

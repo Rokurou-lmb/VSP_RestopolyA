@@ -1,8 +1,12 @@
 package org.haw.vsp.restopoly.services.boards;
 
+import static spark.Spark.get;
+
 import java.util.List;
 
+import org.haw.vsp.restopoly.services.Service;
 import org.haw.vsp.restopoly.services.boards.entities.Board;
+import org.haw.vsp.restopoly.services.games.Games;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -11,9 +15,9 @@ import com.google.gson.JsonParser;
 import spark.Request;
 import spark.Response;
 
-public class Boards {
+public class Boards extends Service{
 	private static Gson myGson = new Gson();
-	private static final JsonParser myParser = new JsonParser();
+	private static JsonParser myParser = new JsonParser();
 	private static List<Board> boards;
 
 	/**
@@ -31,11 +35,11 @@ public class Boards {
 		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
 		String gameUri = json.get("game").getAsString();
 		
-		Board newBoard = new Board();
-		newBoard.setGame(gameUri);
+		Board newBoard = new Board(gameUri);
 		
 		boards.add(newBoard);
-		response.status(201);
+		response.status(STATUS_CREATED);
+		response.header("GameLocationOfBoard", newBoard.getGameUriOfBoard());
 		
 		return "";
 	}
@@ -43,7 +47,10 @@ public class Boards {
 
 	public static String getBoardOfGame(Request request, Response response) {
 		String gameId = request.params(":gameId");
-
+		
+		//TODO: get Game by Service?????
+		get("/games/:gameId", Games::getGame);
+		
 		return null;
 	}
 	

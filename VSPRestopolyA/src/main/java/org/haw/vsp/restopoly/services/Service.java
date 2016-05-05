@@ -25,5 +25,7 @@ public abstract class Service {
 	
 	public static final int STATUS_CONFLICT = 409;
 	
+	public static final int INTERNAL_SERVER_ERROR = 500;
+	
 	
 }
