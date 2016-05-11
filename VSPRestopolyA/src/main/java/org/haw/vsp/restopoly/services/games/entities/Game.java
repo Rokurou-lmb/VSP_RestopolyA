@@ -1,11 +1,11 @@
 package org.haw.vsp.restopoly.services.games.entities;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.Set;
 
 import org.haw.vsp.restopoly.services.games.Games;
@@ -17,7 +17,7 @@ public class Game {
 	private String myName;
 	private String myPlayersUri;
 	private Map<String, Player> myPlayers;
-	private List<Player> myPlayerOrdering;
+	private Queue<Player> myPlayerOrdering;
 	private State myGameState;
 
 	private Map<String, String> myServiceUris;
@@ -32,6 +32,7 @@ public class Game {
 		myPlayersUri = Games.SERVICE_URI + "/" + myId + "/players";
 		myServiceUris = serviceUris;
 		myComponentsUris = componentsUris;
+		myGameState = State.REGISTRATION;
 		
 		myPlayers = new HashMap<>();
 	}
@@ -39,23 +40,21 @@ public class Game {
 	public Player getCurrentPlayer() {
 		return myCurrentPlayer;
 	}
-
-	public void setCurrentPlayer(Player currentPlayer){
-		myCurrentPlayer = currentPlayer;
-	}
 	
 	public void setPlayerReady(String playerId) throws IllegalArgumentException{
 		Player player = myPlayers.get(playerId);
-		if (player != null) {
-			player.setReady(true);
-		} else {
+		if(player == null) {
 			throw new IllegalArgumentException("Player not found!");
+		}else if(myGameState == State.RUNNING && player == myCurrentPlayer) {
+			nextCurrentPlayer();
+		} else if(myGameState == State.REGISTRATION) {
+			player.setReady(true);
 		}
 	}
 	
 	/**
 	 * @param playerId
-	 * @return true if player is ready false otherwise
+	 * @return {@code true} if player is ready {@code false} otherwise
 	 */
 	public boolean isPlayerReady(String playerId) {
 		Player player = myPlayers.get(playerId);
@@ -66,11 +65,13 @@ public class Game {
 	}
 	
 	/**
-	 * Adds a Player to the Game
+	 * Adds a Player to the Game, will only add a new player if the game is currently in the Registration {@link State}
 	 * @param player
 	 */
 	public void addPlayer(Player player) {
-		myPlayers.put(player.getId(), player);
+		if(myGameState == State.REGISTRATION) {
+			myPlayers.put(player.getId(), player);
+		}
 	}
 	
 	public String getPlayersUri() {
@@ -101,14 +102,24 @@ public class Game {
 		return myPlayers.get(playerId);
 	}
 	
-	public State getStatus() {
+	/**
+	 * Current {@link State} of the game
+	 * @return
+	 */
+	public State getState() {
 		return myGameState;
 	}
 	
-	public void setStatus(State state) {
-		if(state == State.RUNNING) {
-			myPlayerOrdering = new ArrayList<>(myPlayers.values());
-			myCurrentPlayer = myPlayerOrdering.get(0); //TODO maybe use a queue?
+	public void advanceState() {
+		myGameState = myGameState.nextStatus();
+		
+		if(myGameState == State.RUNNING) {
+			Collection<Player> players = myPlayers.values();
+			myPlayerOrdering = new ArrayDeque<>(players);
+			myCurrentPlayer = myPlayerOrdering.peek();
+			for (Player player : players) {
+				player.setReady(false);
+			}
 		}
 	}
 
@@ -122,7 +133,7 @@ public class Game {
 		return json.getAsString();
 	}
 
-	public static String getServicesAsJsonObject(Game game) {
+	private static String getServicesAsJsonObject(Game game) {
 		JsonObject json = new JsonObject();
 		Set<Entry<String, String>> entries = game.getMyServiceUris().entrySet();
 		for (Entry<String, String> entry : entries) {
@@ -131,12 +142,18 @@ public class Game {
 		return json.getAsString();
 	}
 
-	public static String getComponentsAsJsonObject(Game game) {
+	private static String getComponentsAsJsonObject(Game game) {
 		JsonObject json = new JsonObject();
 		Set<Entry<String, String>> entries = game.getMyComponentsUris().entrySet();
 		for (Entry<String, String> entry : entries) {
 			json.addProperty(entry.getKey(), entry.getValue());
 		}
 		return json.getAsString();
+	}
+	
+	private void nextCurrentPlayer() {
+		Player lastPlayer = myCurrentPlayer;
+		myCurrentPlayer = myPlayerOrdering.poll();
+		myPlayerOrdering.add(lastPlayer);
 	}
 }

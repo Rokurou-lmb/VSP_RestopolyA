@@ -18,7 +18,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class StartUp {
 	
-	protected static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
+	public static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
 	
 	protected static final String SERVICE_URI = "http://abl459-services:4567";
 	
@@ -70,14 +70,12 @@ public class StartUp {
 	}
 	
 	private static void boardService() {
-			get("/boards",Boards::getAllAktiveBoards);
+			get("/boards",Boards::getBoards);
 			post("/boards",Boards::postNewBoard);
 			get("/boards/:gameId", Boards::getBoardOfGame);
 			
 			
-			//TODO:
-			registerService(null, null, null, null);
-			
+			registerService(Boards.NAME, Boards.DESCRIPTION, Boards.SERVICE_NAME, Boards.SERVICE_URI);
 	}
 	
 

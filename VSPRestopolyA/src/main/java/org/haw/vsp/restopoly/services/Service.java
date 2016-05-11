@@ -1,5 +1,7 @@
 package org.haw.vsp.restopoly.services;
 
+import com.google.gson.JsonObject;
+
 public abstract class Service {
 	
 	public static final String GROUP_NAME = "42_1337_69";
@@ -13,7 +15,7 @@ public abstract class Service {
 	public static final String SERVICE_URI = "/default";
 	
 	/**
-	 * Value for service calls the return no body.
+	 * Value for service calls that return no body.
 	 */
 	public static final String NO_RESPONSE = "";
 	
@@ -27,5 +29,16 @@ public abstract class Service {
 	
 	public static final int INTERNAL_SERVER_ERROR = 500;
 	
-	
+
+
+	/**
+	 * Gets the attribute of the given identifier from {@code json}
+	 * 
+	 * @param json
+	 * @param identifier
+	 * @return The attribute, or {@code null} if none was found.
+	 */
+	protected static String getJsonAttribute(JsonObject json, String identifier) {
+		return json.get(identifier).getAsString();
+	}
 }

@@ -2,17 +2,23 @@ package org.haw.vsp.restopoly.services.games;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
+import org.haw.vsp.restopoly.StartUp;
+import org.haw.vsp.restopoly.services.MissingServiceException;
 import org.haw.vsp.restopoly.services.Service;
 import org.haw.vsp.restopoly.services.games.entities.Game;
 import org.haw.vsp.restopoly.services.games.entities.Player;
+import org.haw.vsp.restopoly.services.games.entities.State;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import spark.Request;
 import spark.Response;
@@ -23,7 +29,7 @@ public class Games extends Service {
 
 	public static final String DESCRIPTION = "A service for managing games";
 
-	public static final String SERVICE_NAME = "games";
+	public static final String SERVICE_NAME = "games" + GROUP_NAME;
 
 	public static final String SERVICE_URI = "/games";
 
@@ -74,7 +80,7 @@ public class Games extends Service {
 		String responseString = "";
 		try {
 			Game game = getGameById(gameId);
-			responseString = game.getStatus().toString();
+			responseString = game.getState().toString();
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
 		}
@@ -102,7 +108,7 @@ public class Games extends Service {
 		return responseString;
 	}
 
-	public static String postPlayer(Request request, Response response) {
+	public static String postPlayer(Request request, Response response) { //TODO place players on the starting field
 		String gameId = request.params(":gameId");
 		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
 		String id = getJsonAttribute(json, "id");
@@ -170,10 +176,12 @@ public class Games extends Service {
 		try {
 			Game game = getGameById(gameId);
 			game.setPlayerReady(playerId);
-			boolean allPlayersReady = game.getPlayers().stream()
-					.allMatch((player) -> player.isReady());
-			if(allPlayersReady) {
-				//put status to running
+			if(game.getState() == State.REGISTRATION) { //start the game when everyone is ready
+				boolean allPlayersReady = game.getPlayers().stream()
+						.allMatch((player) -> player.isReady());
+				if(allPlayersReady) {
+					game.advanceState();
+				}
 			}
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
@@ -222,22 +230,27 @@ public class Games extends Service {
 		// TODO implement
 	}
 
-	/**
-	 * Gets the attribute of the given identifier from {@code json}
-	 * 
-	 * @param json
-	 * @param identifier
-	 * @return The attribute, or {@code null} if none was found.
-	 */
-	private static String getJsonAttribute(JsonObject json, String identifier) {
-		return json.get(identifier).getAsString();
-	}
-
 	private static Game getGameById(String gameId) throws IllegalArgumentException {
 		Game game = myGames.get(gameId);
 		if (game == null) {
 			throw new IllegalArgumentException();
 		}
 		return game;
+	}
+	
+	public static GamesRestClient getGamesRestClient() throws MissingServiceException {
+		YellowPagesRestClient yellow = new YellowPagesRestClient(StartUp.YELLOW_PAGES);
+		GamesRestClient gamesRestClient = null;
+		try {
+			List<org.haw.vs.praktikum.gwln.yellowpages.Service> services = yellow.getServicesOfName(Games.SERVICE_NAME);
+			if(services != null) {
+				gamesRestClient = new GamesRestClient(services.get(0).getUri());
+			} else {
+				throw new MissingServiceException();
+			}
+		} catch (UnirestException e) {
+			e.printStackTrace();
+		}
+		return gamesRestClient;
 	}
 }

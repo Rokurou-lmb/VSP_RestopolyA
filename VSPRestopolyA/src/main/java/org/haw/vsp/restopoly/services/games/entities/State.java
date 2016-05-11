@@ -1,5 +1,10 @@
 package org.haw.vsp.restopoly.services.games.entities;
 
+/**
+ * Describes the possible states of a game. Can be either "Registration", "Running" or "Finished".
+ * @author abt434
+ *
+ */
 public enum State {
 	REGISTRATION {
 		@Override
