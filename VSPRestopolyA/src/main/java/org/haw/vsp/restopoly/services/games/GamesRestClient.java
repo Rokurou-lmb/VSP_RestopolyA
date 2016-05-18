@@ -1,10 +1,13 @@
 package org.haw.vsp.restopoly.services.games;
 
 import java.util.Collection;
-
 import org.haw.vsp.restopoly.services.games.entities.Game;
 import org.haw.vsp.restopoly.services.games.entities.Player;
 import org.haw.vsp.restopoly.services.games.entities.State;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class GamesRestClient {
 	
@@ -14,15 +17,18 @@ public class GamesRestClient {
 		_uri = uri;
 	}
 	
-	public Collection<Game> getGames() {
+	public Collection<Game> getGames() throws UnirestException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(_uri).asJson();
+		
 		return null;
 	}
 	
-	public void postGame(Game game) {
-		
+	public void postGame(Game game) throws UnirestException {
+		HttpResponse<String> stringResponse = Unirest.post(_uri).body(Game.getJsonString(game)).asString();
 	}
 	
-	public Game getGame(String gameId) {
+	public Game getGame(String gameId) throws UnirestException {
+		HttpResponse<JsonNode> jsonResponse = Unirest.get(_uri + "/{id}").routeParam("id", gameId).asJson();
 		return null;
 	}
 	
