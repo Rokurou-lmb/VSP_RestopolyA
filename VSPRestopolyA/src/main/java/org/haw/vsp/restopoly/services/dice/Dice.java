@@ -15,11 +15,11 @@ import spark.Response;
 
 public class Dice extends Service{
 
-	public static final String NAME = "DiceService";
+	protected static final String NAME = "DiceService";
 
 	public static final String DESCRIPTION = "A service for rolling a dice";
 
-	public static final String SERVICE_NAME = "dice" + GROUP_NAME;
+	public static final String SERVICE_NAME = "dice";
 
 	public static final String SERVICE_URI = "/dice";
 

@@ -15,11 +15,11 @@ import spark.Response;
 
 public class Boards extends Service{
 
-	public static final String NAME = "BoardsService";
+	protected static final String NAME = "BoardsService";
 
 	public static final String DESCRIPTION = "A service for managing Boards";
 
-	public static final String SERVICE_NAME = "boards" + GROUP_NAME;
+	public static final String SERVICE_NAME = "boards";
 
 	public static final String SERVICE_URI = "/boards";
 	

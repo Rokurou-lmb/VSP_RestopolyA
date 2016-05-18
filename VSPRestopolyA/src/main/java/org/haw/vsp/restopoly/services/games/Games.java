@@ -5,31 +5,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
-import org.haw.vsp.restopoly.StartUp;
 import org.haw.vsp.restopoly.services.MissingServiceException;
 import org.haw.vsp.restopoly.services.Service;
 import org.haw.vsp.restopoly.services.games.entities.Game;
 import org.haw.vsp.restopoly.services.games.entities.Player;
 import org.haw.vsp.restopoly.services.games.entities.State;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import spark.Request;
 import spark.Response;
 
 public class Games extends Service {
 
-	public static final String NAME = "GamesService";
+	protected static final String NAME = "GamesService";
 
 	public static final String DESCRIPTION = "A service for managing games";
 
-	public static final String SERVICE_NAME = "games" + GROUP_NAME;
+	public static final String SERVICE_NAME = "games";
 
 	public static final String SERVICE_URI = "/games";
 
@@ -239,7 +235,7 @@ public class Games extends Service {
 	}
 	
 	public static GamesRestClient getGamesRestClient() throws MissingServiceException {
-		YellowPagesRestClient yellow = new YellowPagesRestClient(StartUp.YELLOW_PAGES);
+		YellowPagesRestClient yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
 		GamesRestClient gamesRestClient = null;
 		try {
 			List<org.haw.vs.praktikum.gwln.yellowpages.Service> services = yellow.getServicesOfName(Games.SERVICE_NAME);

@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 
 public abstract class Service {
 	
-	public static final String GROUP_NAME = "42_1337_69";
+	protected static final String GROUP_NAME = "42_1337_69";
 	
-	public static final String NAME = "DefaultName";
+	protected static final String NAME = "DefaultName";
 	
 	public static final String DESCRIPTION = "DefaultDescription";
 	
@@ -40,5 +40,9 @@ public abstract class Service {
 	 */
 	protected static String getJsonAttribute(JsonObject json, String identifier) {
 		return json.get(identifier).getAsString();
+	}
+	
+	public static String getName() {
+		return NAME + GROUP_NAME;
 	}
 }
