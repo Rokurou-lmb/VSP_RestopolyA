@@ -1,4 +1,3 @@
-
 package org.haw.vsp.restopoly.services.broker;
 
 import org.haw.vsp.restopoly.services.Service;
@@ -72,4 +71,3 @@ public class Broker extends Service{
 		return NAME + GROUP_NAME;
 	}
 }
-
