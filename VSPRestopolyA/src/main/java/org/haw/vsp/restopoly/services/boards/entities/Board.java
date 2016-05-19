@@ -3,12 +3,11 @@ package org.haw.vsp.restopoly.services.boards.entities;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.haw.vsp.restopoly.services.boards.Boards;
+import org.haw.vsp.restopoly.services.broker.BrokerRestClient;
 
 import com.google.gson.JsonObject;
 
@@ -16,90 +15,140 @@ public class Board {
 
 	private String myId;
 	
-	private Map<Integer, Field> myFields;
+	/**
+	 * Maps from pawnId(uri) to Pawn
+	 */
+	private Map<String, Pawn> myPawns;
 	
-	private Map<String, Field> myPositions;
+	/**
+	 * Maps from position(int) to the corresponding field
+	 */
+	private Map<Integer, Place> myFields;
+	
+	/**
+	 * Maps from placeUri to Place
+	 */
+	private Map<String, Place> myPositions;
 	
 	public Board(String gameId) {
 		myId = Boards.SERVICE_URI + "/" + gameId;
 		myFields = new HashMap<>();
 		myPositions = new HashMap<>();
+		String broker = getNewBroker(gameId);
 		for (int i = 0; i < 40; i++) {
-			myFields.put(i, new Field(i, gameId));
+			myFields.put(i, new Place(i, gameId, "DefaultName", broker));
 		}
 	}
 
 	public void move(String pawnId, int distance) {
-		Field field = myPositions.get(pawnId);
-		int position = field.getPosition();
+		Place place = myPositions.get(pawnId);
+		int position = place.getPosition();
 		int nextFieldPosition = (position + distance) % myPositions.size();
-		Field newField = myFields.get(nextFieldPosition);
-		field.removePawn(pawnId);
-		newField.addPawn(pawnId);
+		Place newField = myFields.get(nextFieldPosition);
+//		place.removePawn(pawnId); FIXME
+//		newField.addPawn(pawnId);
+	}
+	
+	public void addPawn(Pawn pawn) {
+		myPawns.put(pawn.getId(), pawn);
 	}
 
 	public String getId() {
 		return myId;
 	}
 	
-	public Map<Integer, Field> getFields() {
+	public Map<Integer, Place> getFields() {
 		return myFields;
+	}
+	
+	public Pawn getPawnById(String pawnId) {
+		return myPawns.get(pawnId);
+	}
+	
+	/**
+	 * Returns the uri of the place resource at the given position on the board
+	 * @param position 
+	 * @return
+	 */
+	public String getPlaceByPosition(int position) {
+		return myFields.get(position).getPlace();
+	}
+	
+	/**
+	 * Creates a new broker and returns its uri.
+	 * @param gameId the game for which a broker should be created
+	 * @return the uri of the newly created broker
+	 */
+	private String getNewBroker(String gameId) {
+		return ""; //TODO implement
 	}
 
 	public static String getJsonString(Board board) {
 		JsonObject json = new JsonObject();
 		json.addProperty("id", board.getId());
 		json.addProperty("fields", getJsonStringOfFields(board.getFields().values()));
-		return json.getAsString();
+		return json.toString();
 	}
 	
-	private static String getJsonStringOfFields(Collection<Field> fields) {
-		List<Field> fieldList = new ArrayList<>(fields);
+	private static String getJsonStringOfFields(Collection<Place> fields) {
+		List<Place> fieldList = new ArrayList<>(fields);
 		String[] fieldStrings = new String[fields.size()];
 		for (int i = 0; i < fieldList.size(); i++) {
-			Field field = fieldList.get(i);
+			Place field = fieldList.get(i);
 			fieldStrings[i] = getJsonStringOfField(field); 
 		}
 		return fieldStrings.toString();
 	}
 
-	private static String getJsonStringOfField(Field field) {
+	private static String getJsonStringOfField(Place field) {
 		JsonObject json = new JsonObject();
 		json.addProperty("place", field.getPlace());
-		json.addProperty("pawns", field.getPawns().toArray().toString());
+//		json.addProperty("pawns", field.getPawns().toArray().toString());
 		
-		return json.getAsString();
+		return json.toString();
 	}
 
-	private class Field {
-		private final int myPosition;
-		private final String myPlace;
-		private Set<String> myPawns;
+	private class Place {
 		
-		private Field(int position, String gameId) {
-			myPlace = Boards.SERVICE_URI + "/" + gameId + "/places/" + position;
+		/**
+		 * Int representing my position on the board
+		 */
+		private final int myPosition;
+		private final String myName;
+		
+		/**
+		 * Uri of the broker
+		 */
+		private String myBroker;
+		private final String myUri;
+		
+		private Place(int position, String gameId, String name, String broker) {
+			myUri = Boards.SERVICE_URI + "/" + gameId + "/places/" + position;
 			myPosition = position;
-			myPawns = new HashSet<>();
+			myName = name;
+			myBroker = broker;
+			BrokerRestClient.CLIENT.registerNewPlace(myUri);
+			
 		}
 		
 		private String getPlace() {
-			return myPlace;
+			return myUri;
 		}
 		
-		public int getPosition() {
+		private int getPosition() {
 			return myPosition;
 		}
 
-		private Set<String> getPawns() {
-			return myPawns;
+		private String getBroker() {
+			return myBroker;
 		}
-		
-		private void addPawn(String pawn) {
-			myPawns.add(pawn);
+
+		private void setBroker(String broker) {
+			myBroker = broker;
 		}
-		
-		private void removePawn(String pawn) {
-			myPawns.remove(pawn);
+
+		private String getName() {
+			return myName;
 		}
 	}
 }

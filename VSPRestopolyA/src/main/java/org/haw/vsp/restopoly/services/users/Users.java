@@ -130,4 +130,8 @@ public class Users extends Service{
 	private static String parseUserIdFromRequest(Request request) {
 		return request.params(":id");
 	}
+
+	public static String getName() {
+		return NAME + " " + GROUP_NAME;
+	}
 }

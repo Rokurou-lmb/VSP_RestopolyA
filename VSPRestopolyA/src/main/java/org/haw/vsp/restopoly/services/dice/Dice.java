@@ -59,4 +59,8 @@ public class Dice extends Service{
 			e.printStackTrace();
 		}
 	}
+
+	public static String getName() {
+		return NAME + " " + GROUP_NAME;
+	}
 }

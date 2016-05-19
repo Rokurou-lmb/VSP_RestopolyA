@@ -4,13 +4,27 @@ import com.google.gson.JsonObject;
 
 public class Pawn {
 	private final String myId;
+	private String myPlayer;
 	private String myPlace;
-	private String myPosition;
+	private int myPosition;
+	private String myRolls;
+	private String myMoves;
 	
-	public Pawn(String id) {
+	public Pawn(String id, String player, String place, int position, String rolls, String moves) {
 		myId = id;
-		myPlace = "";
-		myPosition = "";
+		myPlayer = player;
+		myPlace = place;
+		myPosition = 0;
+		myRolls = rolls;
+		myMoves = moves;
+	}
+	
+	public String getPlayer() {
+		return myPlayer;
+	}
+	
+	public void setPlayer(String player) {
+		myPlayer = player;
 	}
 
 	public String getPlace() {
@@ -21,22 +35,42 @@ public class Pawn {
 		myPlace = place;
 	}
 
-	public String getPosition() {
+	public int getPosition() {
 		return myPosition;
 	}
 
-	public void setPosition(String position) {
+	public void setPosition(int position) {
 		myPosition = position;
+	}
+
+	public String getRolls() {
+		return myRolls;
+	}
+
+	public void setRolls(String rolls) {
+		myRolls = rolls;
+	}
+
+	public String getMoves() {
+		return myMoves;
+	}
+
+	public void setMoves(String moves) {
+		myMoves = moves;
 	}
 
 	public String getId() {
 		return myId;
 	}
 	
-	private static String getJsonString(Pawn pawn) {
+	public static String getJsonString(Pawn pawn) {
 		JsonObject json = new JsonObject();
-		json.addProperty("", "");
-		return json.getAsString();
+		json.addProperty("id", pawn.getId());
+		json.addProperty("player", pawn.getPlayer());
+		json.addProperty("place", pawn.getPlace());
+		json.addProperty("position", pawn.getPosition());
+		json.addProperty("roll", pawn.getRolls());
+		json.addProperty("move", pawn.getMoves());
+		return json.toString();
 	}
-	
 }

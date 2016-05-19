@@ -16,8 +16,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class StartUp {
 	
 //	private static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
-//	
-//	private static final String SERVICE_URI = "http://abl459-services:4567";
 	
 	private static final YellowPagesRestClient YELLOW_PAGES_CLIENT = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
 	
@@ -71,13 +69,15 @@ public class StartUp {
 		get("/boards", Boards::getBoards);
 		post("/boards", Boards::postNewBoard);
 		get("/boards/:gameId", Boards::getBoardOfGame);
+		get("/boards/:gameId/pawns/:pawnId", Boards::getPlayerPawn);
+		get("/boards/:gameId/pawns", Boards::getAllPlayerPositions);
 		
 		registerService(Boards.getName(), Boards.DESCRIPTION, Boards.SERVICE_NAME, Boards.SERVICE_URI);
 	}
 	
 	private static void registerService(String name, String description, String serviceName, String uri) {
 		try {
-			Service service = new Service(name, serviceName, uri, description);
+			Service service = new Service(name, serviceName, org.haw.vsp.restopoly.services.Service.SERVICE + uri, description);
 			Service lastService = null;
 			lastService = removeOldServices(name);
 			
@@ -98,9 +98,9 @@ public class StartUp {
 	 * @return last remaining service registered under the given name or null if none existed
 	 * @throws UnirestException
 	 */
-	private static org.haw.vs.praktikum.gwln.yellowpages.Service removeOldServices(String serviceName) throws UnirestException {
-		List<org.haw.vs.praktikum.gwln.yellowpages.Service> servicesByName = YELLOW_PAGES_CLIENT.getServicesOfName(serviceName);
-		org.haw.vs.praktikum.gwln.yellowpages.Service lastService = null;
+	private static Service removeOldServices(String serviceName) throws UnirestException {
+		List<Service> servicesByName = YELLOW_PAGES_CLIENT.getServicesOfName(serviceName);
+		Service lastService = null;
 		for(int i = 0; i < servicesByName.size(); i++) {
 			if(i == (servicesByName.size() - 1)) {
 				lastService = servicesByName.get(i);

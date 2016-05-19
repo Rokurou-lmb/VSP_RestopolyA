@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import org.haw.vsp.restopoly.services.games.Games;
-
 import com.google.gson.JsonObject;
 
 public class Game {
@@ -29,7 +27,7 @@ public class Game {
 			Map<String, String> componentsUris) {
 		myId = id;
 		myName = name;
-		myPlayersUri = Games.SERVICE_URI + "/" + myId + "/players";
+		myPlayersUri = myId + "/players";
 		myServiceUris = serviceUris;
 		myComponentsUris = componentsUris;
 		myGameState = State.REGISTRATION;
@@ -130,7 +128,14 @@ public class Game {
 		json.addProperty("players", game.getPlayersUri());
 		json.addProperty("services", getServicesAsJsonObject(game));
 		json.addProperty("components", getComponentsAsJsonObject(game));
-		return json.getAsString();
+		return json.toString();
+	}
+
+	public static String getJsonSummaryString(Game game) {
+		JsonObject json = new JsonObject();
+		json.addProperty("id", game.getId());
+		json.addProperty("players", game.getPlayersUri());
+		return json.toString();
 	}
 
 	private static String getServicesAsJsonObject(Game game) {
@@ -139,7 +144,7 @@ public class Game {
 		for (Entry<String, String> entry : entries) {
 			json.addProperty(entry.getKey(), entry.getValue());
 		}
-		return json.getAsString();
+		return json.toString();
 	}
 
 	private static String getComponentsAsJsonObject(Game game) {
@@ -148,7 +153,7 @@ public class Game {
 		for (Entry<String, String> entry : entries) {
 			json.addProperty(entry.getKey(), entry.getValue());
 		}
-		return json.getAsString();
+		return json.toString();
 	}
 	
 	private void nextCurrentPlayer() {

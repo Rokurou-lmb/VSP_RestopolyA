@@ -43,6 +43,6 @@ public class User{
 		json.addProperty("id", user.getId());
 		json.addProperty("name", user.getName());
 		json.addProperty("uri", user.getClientUri());
-		return json.getAsString();
+		return json.toString();
 	}
 }

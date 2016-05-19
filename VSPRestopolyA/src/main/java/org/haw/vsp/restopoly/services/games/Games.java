@@ -35,7 +35,7 @@ public class Games extends Service {
 
 	public static String getGames(Request request, Response response) {
 		return myGson.toJson(myGames.values().stream()
-				.map((game) -> Game.getJsonString(game))
+				.map((game) -> Game.getJsonSummaryString(game))
 				.toArray(String[]::new));
 	}
 
@@ -50,12 +50,12 @@ public class Games extends Service {
 		Map<String, String> services = getMapFromJson(servicesJson);
 		Map<String, String> components = getMapFromJson(componentsJson);
 
-		Game newGame = new Game(id, name, services, components);
-		myGames.put(newGame.getId(), newGame);
+		Game newGame = new Game(SERVICE + SERVICE_URI + "/" + id, name, services, components);
+		myGames.put(id, newGame);
 
 		response.status(STATUS_CREATED);
 		response.header("Location", newGame.getId());
-		return "";
+		return Game.getJsonString(newGame);
 	}
 
 	public static String getGame(Request request, Response response) {
@@ -84,11 +84,11 @@ public class Games extends Service {
 	}
 	
 	public static String putStatus(Request request, Response response) {
-		response.status(INTERNAL_SERVER_ERROR);
-		return ""; //TODO implement
+		response.status(NOT_IMPLEMENTED);
+		return NO_RESPONSE;
 	}
 
-	public static String getPlayers(Request request, Response response) {
+	public static String getPlayers(Request request, Response response) { //TODO test this
 		String gameId = request.params(":gameId");
 
 		String responseString = "";
@@ -104,7 +104,7 @@ public class Games extends Service {
 		return responseString;
 	}
 
-	public static String postPlayer(Request request, Response response) { //TODO place players on the starting field
+	public static String postPlayer(Request request, Response response) { //TODO place players on the starting field  //TODO test this
 		String gameId = request.params(":gameId");
 		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
 		String id = getJsonAttribute(json, "id");
@@ -112,35 +112,33 @@ public class Games extends Service {
 		String pawn = getJsonAttribute(json, "pawn");
 		String account = getJsonAttribute(json, "account");
 
-		pawn = (pawn == null) ? getNewDefaultPawn() : pawn;
-		account = (account == null) ? getNewAccount() : account;
+		pawn = (pawn == "") ? getNewDefaultPawn() : pawn;
+		account = (account == "") ? getNewAccount() : account;
 
-		Player newPlayer = new Player(user, id, pawn, account);
+		Player newPlayer = new Player(user, SERVICE + SERVICE_URI + "/" + id, pawn, account);
 
-		response.status(STATUS_CREATED);
-		response.header("Location", newPlayer.getId()); // TODO give fully
-														// classified uri (test
-														// if spark fully
-														// qualifies relative
-														// uris)
 
+		String responseString = NO_RESPONSE;
 		try {
 			Game game = getGameById(gameId);
 			game.addPlayer(newPlayer);
+			response.status(STATUS_CREATED);
+			response.header("Location",newPlayer.getId());
+			responseString = Player.getJsonString(newPlayer);
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
 		}
-		return NO_RESPONSE;
+		return responseString;
 	}
 
-	public static String getPlayer(Request request, Response response) {
+	public static String getPlayer(Request request, Response response) { //TODO test this
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
 
 		String responseString = "";
 		try {
 			Game game = getGameById(gameId);
-			Player player = game.getPlayer(playerId);
+			Player player = game.getPlayer(SERVICE + SERVICE_URI + "/" + playerId);
 			responseString = Player.getJsonString(player);
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
@@ -148,7 +146,7 @@ public class Games extends Service {
 		return responseString;
 	}
 
-	public static String getPlayerIsReady(Request request, Response response) {
+	public static String getPlayerIsReady(Request request, Response response) { //TODO test this
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
 
@@ -165,7 +163,7 @@ public class Games extends Service {
 		return responseString;
 	}
 
-	public static String putPlayerIsReady(Request request, Response response) {
+	public static String putPlayerIsReady(Request request, Response response) { //TODO test this
 		String gameId = request.params(":gameId");
 		String playerId = request.params(":playerId");
 
@@ -185,7 +183,7 @@ public class Games extends Service {
 		return NO_RESPONSE;
 	}
 
-	public static String getCurrentPlayer(Request request, Response response) {
+	public static String getCurrentPlayer(Request request, Response response) { //TODO test this
 		String gameId = request.params(":gameId");
 		Player player = null;
 		try {
@@ -211,9 +209,8 @@ public class Games extends Service {
 	 * 
 	 * @return uri to newly created bankaccount
 	 */
-	private static String getNewAccount() {
+	private static String getNewAccount() { //TODO implement this
 		return null;
-		// TODO implement
 	}
 
 	/**
@@ -248,5 +245,9 @@ public class Games extends Service {
 			e.printStackTrace();
 		}
 		return gamesRestClient;
+	}
+
+	public static String getName() {
+		return NAME + " " + GROUP_NAME;
 	}
 }
