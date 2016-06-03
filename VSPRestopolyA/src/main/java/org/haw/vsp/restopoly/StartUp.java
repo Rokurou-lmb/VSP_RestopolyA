@@ -39,6 +39,9 @@ public class StartUp {
 		
 	}
 	
+	/**
+	 * UserService
+	 */
 	private static void userService() {
 		get("/users", Users::getUsers);
 		post("/users", Users::postUser);
@@ -49,6 +52,9 @@ public class StartUp {
 		registerService(Users.getName(), Users.DESCRIPTION, Users.SERVICE_NAME, Users.SERVICE_URI);
 	}
 	
+	/**
+	 * GameService
+	 */
 	private static void gameService() {
 		get("/games", Games::getGames);
 		post("/games", Games::postGame);
@@ -66,6 +72,9 @@ public class StartUp {
 		registerService(Games.getName(), Games.DESCRIPTION, Games.SERVICE_NAME, Games.SERVICE_URI);
 	}
 	
+	/**
+	 * BoardService
+	 */
 	private static void boardService() {
 		get("/boards", Boards::getBoards);
 		post("/boards", Boards::postNewBoard);
@@ -76,6 +85,13 @@ public class StartUp {
 		registerService(Boards.getName(), Boards.DESCRIPTION, Boards.SERVICE_NAME, Boards.SERVICE_URI);
 	}
 	
+	/**
+	 * registers the given service at the YellowPages
+	 * @param name
+	 * @param description
+	 * @param serviceName 
+	 * @param uri - of the given service
+	 */
 	private static void registerService(String name, String description, String serviceName, String uri) {
 		try {
 			Service service = new Service(name, serviceName, org.haw.vsp.restopoly.services.Service.SERVICE + uri, description);

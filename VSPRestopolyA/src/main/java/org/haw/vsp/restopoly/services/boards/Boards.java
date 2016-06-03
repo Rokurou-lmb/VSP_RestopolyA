@@ -44,7 +44,7 @@ public class Boards extends Service {
 		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
 		String gameUri = json.get("game").getAsString();
 		
-		Board newBoard = new Board(getGameIdFromUri(gameUri));
+		Board newBoard = new Board(gameUri);
 		
 		myBoards.put(gameUri, newBoard);
 		response.status(STATUS_CREATED);
@@ -128,7 +128,7 @@ public class Boards extends Service {
 		return null;
 	}
 
-	//TODO implement
+	//TODO deplement
 	public static String postRollsOfPawn(Request request, Response response) {
 		String gameId = request.params(":gameId");
 		String pawnId = request.params(":pawnId");
@@ -150,11 +150,6 @@ public class Boards extends Service {
 		String gameId = request.params(":gameId");
 		String place = request.params(":place");
 		return null;
-	}
-
-	private static String getGameIdFromUri(String uri) {
-		String[] subStrings = uri.split("/");
-		return subStrings[subStrings.length - 1];
 	}
 
 	public static String getName() {
