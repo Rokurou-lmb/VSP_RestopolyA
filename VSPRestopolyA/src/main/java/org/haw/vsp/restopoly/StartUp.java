@@ -60,6 +60,7 @@ public class StartUp {
 		get("/games/:gameId/players/:playerId", Games::getPlayer);
 		put("/games/:gameId/players/:playerId/ready", Games::putPlayerIsReady);
 		get("/games/:gameId/players/:playerId/ready", Games::getPlayerIsReady);
+		get("/games/:gameId/services", Games::getServices);
 		get("/games/:gameId/players/current", Games::getCurrentPlayer);
 		
 		registerService(Games.getName(), Games.DESCRIPTION, Games.SERVICE_NAME, Games.SERVICE_URI);

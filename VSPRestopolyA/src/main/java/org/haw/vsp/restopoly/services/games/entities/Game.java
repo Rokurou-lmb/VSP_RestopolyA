@@ -14,6 +14,8 @@ public class Game {
 	private String myId;
 	private String myName;
 	private String myPlayersUri;
+	private String myServicesUri;
+	private String myComponentsUri;
 	private Map<String, Player> myPlayers;
 	private Queue<Player> myPlayerOrdering;
 	private State myGameState;
@@ -28,6 +30,8 @@ public class Game {
 		myId = id;
 		myName = name;
 		myPlayersUri = myId + "/players";
+		myServicesUri = myId + "/services";
+		myComponentsUri = myId + "/components";
 		myServiceUris = serviceUris;
 		myComponentsUris = componentsUris;
 		myGameState = State.REGISTRATION;
@@ -100,6 +104,14 @@ public class Game {
 		return myPlayers.get(playerId);
 	}
 	
+	public String getServicesUri() {
+		return myServicesUri;
+	}
+
+	public String getComponentsUri() {
+		return myComponentsUri;
+	}
+	
 	/**
 	 * Current {@link State} of the game
 	 * @return
@@ -120,6 +132,17 @@ public class Game {
 			}
 		}
 	}
+	
+	public static String getUriJsonString(Game game) {
+		JsonObject json = new JsonObject();
+		json.addProperty("id", game.getId());
+		json.addProperty("name", game.getName());
+		json.addProperty("players", game.getPlayersUri());
+		json.addProperty("services", game.getServicesUri());
+		json.addProperty("components", game.getComponentsUri());
+		json.addProperty("started", game.getState() == State.RUNNING);
+		return json.toString();
+	}
 
 	public static String getJsonString(Game game) {
 		JsonObject json = new JsonObject();
@@ -138,7 +161,7 @@ public class Game {
 		return json.toString();
 	}
 
-	private static String getServicesAsJsonObject(Game game) {
+	public static String getServicesAsJsonObject(Game game) {
 		JsonObject json = new JsonObject();
 		Set<Entry<String, String>> entries = game.getMyServiceUris().entrySet();
 		for (Entry<String, String> entry : entries) {

@@ -65,7 +65,7 @@ public class Users extends Service{
 	public static String getUser(Request request, Response response) {
 		User user = getUserById(request);
 		response.status(STATUS_NOT_FOUND);
-		String responseString = "";
+		String responseString = "Der Benutzer konnte nicht gefunden werden.";
 		if(user != null) {
 			response.status(STATUS_OK);
 			responseString = User.getJsonString(user);
@@ -128,7 +128,7 @@ public class Users extends Service{
 	 * @return the userId
 	 */
 	private static String parseUserIdFromRequest(Request request) {
-		return request.params(":id");
+		return "/users/" + request.params(":id");
 	}
 
 	public static String getName() {

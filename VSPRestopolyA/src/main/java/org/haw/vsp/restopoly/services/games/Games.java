@@ -43,14 +43,24 @@ public class Games extends Service {
 		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
 		String id = getJsonAttribute(json, "id");
 		String name = getJsonAttribute(json, "name");
+		if(id == null || id == "") {
+			id = name;
+		}
 
 		JsonObject servicesJson = json.get("services").getAsJsonObject();
-		JsonObject componentsJson = json.get("components").getAsJsonObject();
+		JsonElement componentsJsonElement = json.get("components");
+		JsonObject componentsJson;
+		if(componentsJsonElement == null) {
+			componentsJson = new JsonObject();
+		} else {
+			componentsJson = json.get("components").getAsJsonObject();
+		}
+		
 
 		Map<String, String> services = getMapFromJson(servicesJson);
 		Map<String, String> components = getMapFromJson(componentsJson);
 
-		Game newGame = new Game(SERVICE + SERVICE_URI + "/" + id, name, services, components);
+		Game newGame = new Game(SERVICE_URI + "/" + id, name, services, components);
 		myGames.put(id, newGame);
 
 		response.status(STATUS_CREATED);
@@ -64,7 +74,7 @@ public class Games extends Service {
 		String responseString = "";
 		try {
 			Game game = getGameById(gameId);
-			responseString = Game.getJsonString(game);
+			responseString = Game.getUriJsonString(game);
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
 		}
@@ -86,6 +96,18 @@ public class Games extends Service {
 	public static String putStatus(Request request, Response response) {
 		response.status(NOT_IMPLEMENTED);
 		return NO_RESPONSE;
+	}
+	
+	public static String getServices(Request request, Response response) {
+		String gameId = request.params(":gameId");
+		String responseString = "";
+		try {
+			Game game = getGameById(gameId);
+			responseString = Game.getServicesAsJsonObject(game);
+		} catch (IllegalArgumentException e) {
+			response.status(STATUS_NOT_FOUND);
+		}
+		return responseString;
 	}
 
 	public static String getPlayers(Request request, Response response) { //TODO test this
