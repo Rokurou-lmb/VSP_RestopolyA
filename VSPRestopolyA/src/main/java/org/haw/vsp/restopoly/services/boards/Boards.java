@@ -2,9 +2,11 @@ package org.haw.vsp.restopoly.services.boards;
 
 import java.util.Map;
 
+import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
 import org.haw.vsp.restopoly.services.Service;
 import org.haw.vsp.restopoly.services.boards.entities.Board;
 import org.haw.vsp.restopoly.services.boards.entities.Pawn;
+import org.haw.vsp.restopoly.services.brokers.Brokers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -25,16 +27,14 @@ public class Boards extends Service {
 
 	private static Gson myGson = new Gson();
 	private static JsonParser myParser = new JsonParser();
+	private static final YellowPagesRestClient yellow = new YellowPagesRestClient(
+			YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
 
 	/**
 	 * Maps a gameUri to its board
 	 */
 	private static Map<String, Board> myBoards;
 
-	/**
-	 * Returns all necessary Request
-	 */
-	private static BoardsRestClient boardManager = new BoardsRestClient();
 
 	public static String getBoards(Request request, Response response) {
 		return myGson.toJson(myBoards);

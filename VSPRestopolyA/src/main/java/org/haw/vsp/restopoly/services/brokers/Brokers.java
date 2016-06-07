@@ -63,6 +63,13 @@ public class Brokers extends Service{
 	}
 	
 	
+	public static String getAllAvaliblePlaces(Request request , Response response){ //TODO: prüfen
+		String gameId = request.params(":gameId");
+		Broker broker = myBrokers.get(gameId);
+		return  myGson.toJson(broker.getEstates());
+		
+	}
+	
 	
 	
 	

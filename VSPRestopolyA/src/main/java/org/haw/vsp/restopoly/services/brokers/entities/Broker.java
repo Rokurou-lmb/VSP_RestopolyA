@@ -1,5 +1,7 @@
 package org.haw.vsp.restopoly.services.brokers.entities;
 
+import java.util.List;
+
 import org.haw.vsp.restopoly.services.brokers.Brokers;
 
 public class Broker {
@@ -8,8 +10,10 @@ public class Broker {
 	
 	private String myGame;
 	
-	private String myEstates;
-	
+	/**
+	 * String - uri of the resource
+	 */
+	private List<String> myEstates; 
 	
 	public Broker(String gameId){
 		myId = Brokers.SERVICE_URI +"/"+ gameId;
@@ -25,6 +29,10 @@ public class Broker {
 	public static String getUriJsonString(Broker broker) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public List<String> getEstates(){
+		return myEstates;
 	}
 
 
