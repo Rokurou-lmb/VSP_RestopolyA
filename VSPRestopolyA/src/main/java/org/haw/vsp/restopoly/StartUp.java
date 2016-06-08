@@ -8,6 +8,7 @@ import java.util.List;
 import org.haw.vs.praktikum.gwln.yellowpages.Service;
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
 import org.haw.vsp.restopoly.services.boards.Boards;
+import org.haw.vsp.restopoly.services.brokers.Brokers;
 import org.haw.vsp.restopoly.services.dice.Dice;
 import org.haw.vsp.restopoly.services.games.Games;
 import org.haw.vsp.restopoly.services.users.Users;
@@ -29,20 +30,23 @@ public class StartUp {
 		registerService(Dice.getName(), Dice.DESCRIPTION, Dice.SERVICE_NAME, Dice.SERVICE_URI);
 		
 		// Users-Service
-		userService();
+		registerUserService();
 		
 		// Games-Service
-		gameService();
+		registerGameService();
 		
 		// Board-Service
-		boardService();
+		registerBoardService();
+		
+		//Broker-Service
+		registerBrokerService();
 		
 	}
-	
+
 	/**
 	 * UserService
 	 */
-	private static void userService() {
+	private static void registerUserService() {
 		get("/users", Users::getUsers);
 		post("/users", Users::postUser);
 		get("/users/:id", Users::getUser);
@@ -55,7 +59,7 @@ public class StartUp {
 	/**
 	 * GameService
 	 */
-	private static void gameService() {
+	private static void registerGameService() {
 		get("/games", Games::getGames);
 		post("/games", Games::postGame);
 		get("/games/:gameId", Games::getGame);
@@ -75,7 +79,7 @@ public class StartUp {
 	/**
 	 * BoardService
 	 */
-	private static void boardService() {
+	private static void registerBoardService() {
 		get("/boards", Boards::getBoards);
 		post("/boards", Boards::postNewBoard);
 		get("/boards/:gameId", Boards::getBoardOfGame);
@@ -83,6 +87,17 @@ public class StartUp {
 		get("/boards/:gameId/pawns", Boards::getAllPlayerPositions);
 		
 		registerService(Boards.getName(), Boards.DESCRIPTION, Boards.SERVICE_NAME, Boards.SERVICE_URI);
+	}
+	
+	private static void registerBrokerService() {
+		get("/brokers", Brokers::getBrokers);
+		post("/brokers", Brokers::postBroker);
+		get("/brokers/:gameId", Brokers::getBroker);
+		get("/brokers/:gameId/places", Brokers::getAllAvailablePlaces);
+		put("/brokers/:gameId/places/:placeId", Brokers::putRegisterEstate);
+		post("/brokers/:gameId/places/:placeId/visit/:playerId", Brokers::postVisitEstate);
+		get("/brokers/:gameId/places/:placeId/owner", Brokers::getOwner);
+		post("/brokers/:gameId/places/:placeId/owner", Brokers::postOwner);
 	}
 	
 	/**

@@ -3,25 +3,29 @@ package org.haw.vsp.restopoly.services.brokers.entities;
 import java.util.List;
 
 public class Estate {
-
 	
 	/**
-	 * the uri to the estate itself
+	 * Uri to the estate itself
 	 */
 	private String myId;
 	
 	/**
-	 * uri to the place on the board
+	 * Uri to the place on the board
 	 */
-	private String myPlace;
+	private String myPlaceUri;
 	
 	/**
-	 * the uri to the owner resource of the estate
+	 * Uri to the player resource that owns this estate
 	 */
 	private String myOwner;
 	
 	/**
-	 * The value of the place, i.e. for how much it may be bought or sold
+	 * Uri to the owner resource of the estate
+	 */
+	private String myOwnerUri;
+	
+	/**
+	 * Value of the estate, i.e. for how much it may be bought or sold
 	 */
 	private Integer myValue;
 	
@@ -36,22 +40,38 @@ public class Estate {
 	private List<Integer> myCost;
 	
 	/**
-	 * amount of houses set on the estate
+	 * Amount of houses set on the estate
 	 */
 	private Integer myHouses;
 	
 	/**
-	 * the uri to the visit resource
+	 * Uri to the visit resource of this estate
 	 */
-	private String myVisit;
+	private String myVisitUri;
 		
 	/**
-	 * "the uri to the hypocredit of the estate"
+	 * Uri to the hypocredit resource of this estate"
 	 */
-	private String myHypocredit;
+	private String myHypocreditUri;
 	
-	public Estate(){
-		
+	public Estate(String placeId){
+		myPlaceUri = placeId;
+		//TODO: initialise the Estate object
 	}
-	
+
+	public String getOwner() {
+		return myOwner;
+	}
+
+	public void setOwner(String owner) {
+		myOwner = owner;
+	}
+
+	public String getId() {
+		return myId;
+	}
+
+	public void setId(String id) {
+		myId = id;
+	}
 }
