@@ -168,7 +168,7 @@ public class Games extends Service {
 		String responseString = "";
 		try {
 			Game game = getGameById(gameId);
-			Player player = game.getPlayer(SERVICE + SERVICE_URI + "/" + playerId);
+			Player player = game.getPlayer(SERVICE + SERVICE_URI + "/" + gameId + "/players/" + playerId);
 			responseString = Player.getJsonString(player);
 		} catch (IllegalArgumentException e) {
 			response.status(STATUS_NOT_FOUND);
