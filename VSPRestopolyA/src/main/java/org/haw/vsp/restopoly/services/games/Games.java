@@ -21,6 +21,8 @@ import spark.Request;
 import spark.Response;
 
 public class Games extends Service {
+	
+	private static int IDS = 0;
 
 	protected static final String NAME = "GamesService";
 
@@ -94,7 +96,7 @@ public class Games extends Service {
 		return responseString;
 	}
 	
-	public static String putStatus(Request request, Response response) {
+	public static String putStatus(Request request, Response response) { //TODO: implement
 		response.status(NOT_IMPLEMENTED);
 		return NO_RESPONSE;
 	}
@@ -137,8 +139,9 @@ public class Games extends Service {
 
 		pawn = (pawn == "") ? getNewDefaultPawn() : pawn;
 		account = (account == "") ? getNewAccount() : account;
-
-		Player newPlayer = new Player(user, SERVICE + SERVICE_URI + "/" + id, pawn, account);
+		id = (id == "") ? getNextId() : id;
+		
+		Player newPlayer = new Player(user, SERVICE + SERVICE_URI + "/" + gameId + "/players/" + id, pawn, account);
 
 
 		String responseString = NO_RESPONSE;
@@ -152,6 +155,10 @@ public class Games extends Service {
 			response.status(STATUS_NOT_FOUND);
 		}
 		return responseString;
+	}
+
+	private static String getNextId() {
+		return ""  + IDS++;
 	}
 
 	public static String getPlayer(Request request, Response response) { //TODO test this
@@ -233,7 +240,7 @@ public class Games extends Service {
 	 * @return uri to newly created bankaccount
 	 */
 	private static String getNewAccount() { //TODO implement this
-		return null;
+		return "";
 	}
 
 	/**
@@ -241,9 +248,8 @@ public class Games extends Service {
 	 * 
 	 * @return uri to newly created pawn
 	 */
-	private static String getNewDefaultPawn() {
-		return null;
-		// TODO implement
+	private static String getNewDefaultPawn() {// TODO implement
+		return "";
 	}
 
 	private static Game getGameById(String gameId) throws IllegalArgumentException {

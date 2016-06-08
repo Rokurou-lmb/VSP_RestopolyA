@@ -1,17 +1,24 @@
 package org.haw.vsp.restopoly.services.games;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.haw.vsp.restopoly.services.games.entities.Game;
 import org.haw.vsp.restopoly.services.games.entities.Player;
 import org.haw.vsp.restopoly.services.games.entities.State;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+
 public class GamesRestClient {
 	
-	private final String _uri;
+	private final String myUri;
+	private static JsonParser myParser = new JsonParser();
 	
 	public GamesRestClient(String uri) {
-		_uri = uri;
+		myUri = uri;
 	}
 	
 	public Collection<Game> getGames() {
@@ -22,8 +29,11 @@ public class GamesRestClient {
 		
 	}
 	
-	public Game getGame(String gameId) {
-		return null;
+	public Game getGame(String gameId) throws UnirestException {
+		String responseString ="";
+		JsonObject json = myParser.parse(Unirest.get(myUri).asString().toString()).getAsJsonObject();
+		Game game = Game.fromUriJson(json);
+		return game;
 	}
 	
 	public State getStatus() {
@@ -55,6 +65,16 @@ public class GamesRestClient {
 	}
 	
 	public Player getCurrentPlayer(String gameId) {
+		return null;
+	}
+
+	public Map<String, String> getComponents(String componentsUri) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Map<String, String> getServices(String servicesUri) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -8,6 +8,10 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.haw.vsp.restopoly.services.MissingServiceException;
+import org.haw.vsp.restopoly.services.games.Games;
+import org.haw.vsp.restopoly.services.games.GamesRestClient;
+
 import com.google.gson.JsonObject;
 
 public class Game {
@@ -25,8 +29,7 @@ public class Game {
 	
 	private Player myCurrentPlayer;
 
-	public Game(String id, String name, Map<String, String> serviceUris,
-			Map<String, String> componentsUris) {
+	public Game(String id, String name, Map<String, String> serviceUris, Map<String, String> componentsUris, boolean running) {
 		myId = id;
 		myName = name;
 		myPlayersUri = myId + "/players";
@@ -37,6 +40,10 @@ public class Game {
 		myGameState = State.REGISTRATION;
 		
 		myPlayers = new HashMap<>();
+	}
+
+	public Game(String id, String name, Map<String, String> serviceUris, Map<String, String> componentsUris) {
+		this(id, name, serviceUris, componentsUris, false);
 	}
 
 	public Player getCurrentPlayer() {
@@ -131,6 +138,33 @@ public class Game {
 				player.setReady(false);
 			}
 		}
+	}
+	
+	public static Game fromUriJson(JsonObject json) { //TODO implement json to Game parsing
+		Game game = null;
+		try {
+			GamesRestClient gameRestClient = Games.getGamesRestClient();
+			
+			
+			String id = json.get("id").toString();
+			String name = json.get("name").toString();
+			String playersUri = json.get("players").toString();
+			Collection<Player> players = gameRestClient.getPlayers(id);
+			
+			String servicesUri = json.get("services").toString();
+			Map<String, String> services = gameRestClient.getServices(servicesUri);
+			
+			String componentsUri = json.get("components").toString();
+			Map<String, String> components = gameRestClient.getComponents(componentsUri);
+			
+			String started = json.get("started").toString();
+			
+			game = new Game(id, name, services, components, Boolean.getBoolean(started));
+		} catch (MissingServiceException e) {
+			System.out.println("Games Service not found!");
+		}
+		
+		return game;
 	}
 	
 	public static String getUriJsonString(Game game) {
