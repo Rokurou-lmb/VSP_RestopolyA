@@ -22,8 +22,6 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/bai5_vs_events_lngw.jar"/>
-	<classpathentry kind="lib" path="lib/bai5_vs_yellowpages_lngw.jar"/>
-	<classpathentry kind="lib" path="C:/Users/abt434/Desktop/bai5_vs.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/BAI5_VS_Praktikum"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

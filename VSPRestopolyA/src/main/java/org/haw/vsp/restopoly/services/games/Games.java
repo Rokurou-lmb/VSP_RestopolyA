@@ -1,5 +1,6 @@
 package org.haw.vsp.restopoly.services.games;
 
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -254,7 +255,13 @@ public class Games extends Service {
 	}
 	
 	public static GamesRestClient getGamesRestClient() throws MissingServiceException {
-		YellowPagesRestClient yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+		YellowPagesRestClient yellow = null;
+			try {
+				yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+			} catch (MalformedURLException e1) {
+				e1.printStackTrace();
+			}
+		
 		GamesRestClient gamesRestClient = null;
 		try {
 			List<org.haw.vs.praktikum.gwln.yellowpages.Service> services = yellow.getServicesOfName(Games.SERVICE_NAME);

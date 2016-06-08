@@ -1,5 +1,6 @@
 package org.haw.vsp.restopoly.services.boards.entities;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,14 +33,22 @@ public class Board {
 
 	private BrokerRestClient myBrokerClient;
 
-	private static final YellowPagesRestClient yellow = new YellowPagesRestClient(
-			YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+	private static YellowPagesRestClient yellow;
 
 	/**
 	 * Maps from placeUri to Place
 	 */
 	private Map<String, Place> myPositions;
 
+	static {
+		yellow = null;
+		try {
+			yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public Board(String gameId) {
 		try {
 			myId = Boards.SERVICE_URI + "/" + gameId;

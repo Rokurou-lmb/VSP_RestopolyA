@@ -4,7 +4,10 @@ import static spark.Spark.delete;
 import static spark.Spark.get;
 import static spark.Spark.post;
 import static spark.Spark.put;
+
+import java.net.MalformedURLException;
 import java.util.List;
+
 import org.haw.vs.praktikum.gwln.yellowpages.Service;
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
 import org.haw.vsp.restopoly.services.boards.Boards;
@@ -12,13 +15,21 @@ import org.haw.vsp.restopoly.services.brokers.Brokers;
 import org.haw.vsp.restopoly.services.dice.Dice;
 import org.haw.vsp.restopoly.services.games.Games;
 import org.haw.vsp.restopoly.services.users.Users;
+
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 public class StartUp {
 	
 //	private static final String YELLOW_PAGES = "http://172.18.0.5:4567/services";
 	
-	private static final YellowPagesRestClient YELLOW_PAGES_CLIENT = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+	private static YellowPagesRestClient YELLOW_PAGES_CLIENT;
+	
+	static {
+		YELLOW_PAGES_CLIENT = null;
+		try {
+			YELLOW_PAGES_CLIENT = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+		} catch (MalformedURLException e) {}
+	}
 	
 	public static void main(String[] args) {
 
@@ -94,7 +105,7 @@ public class StartUp {
 		post("/brokers", Brokers::postBroker);
 		get("/brokers/:gameId", Brokers::getBroker);
 		get("/brokers/:gameId/places", Brokers::getAllAvailablePlaces);
-		put("/brokers/:gameId/places/:placeId", Brokers::putRegisterEstate);
+		put("/brokers/:gameId/places/:placeId", Brokers::putRegisterPlace);
 		post("/brokers/:gameId/places/:placeId/visit/:playerId", Brokers::postVisitEstate);
 		get("/brokers/:gameId/places/:placeId/owner", Brokers::getOwner);
 		post("/brokers/:gameId/places/:placeId/owner", Brokers::postOwner);

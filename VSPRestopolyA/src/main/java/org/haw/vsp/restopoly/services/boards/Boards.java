@@ -1,5 +1,6 @@
 package org.haw.vsp.restopoly.services.boards;
 
+import java.net.MalformedURLException;
 import java.util.Map;
 
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
@@ -27,8 +28,17 @@ public class Boards extends Service {
 
 	private static Gson myGson = new Gson();
 	private static JsonParser myParser = new JsonParser();
-	private static final YellowPagesRestClient yellow = new YellowPagesRestClient(
-			YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+	private static YellowPagesRestClient yellow;
+	
+	static {
+		yellow = null;
+		try {
+			yellow = new YellowPagesRestClient(YellowPagesRestClient.HAW_YELLOW_PAGES_INTERNAL);
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Maps a gameUri to its board
@@ -114,8 +124,12 @@ public class Boards extends Service {
 	public static String postMovePlayerPawns(Request request, Response response) {
 		String gameId = request.params(":gameId");
 		String pawnId = request.params(":pawnId");
-		JsonObject json = myParser.parse(request.body()).getAsJsonObject();
-		int distance = Integer.valueOf(getJsonAttribute(json, ""));
+		
+		//TODO: get Dice-Service from Game-Service and let it roll. 
+		//Get the resulting event and visit the place at the broker
+		
+		
+		int distance = 0;
 		Board board = myBoards.get(gameId);
 		board.move(pawnId, distance);
 

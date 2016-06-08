@@ -1,10 +1,11 @@
 package org.haw.vsp.restopoly.services.dice;
 
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.haw.vs.praktikum.gwln.praktikum1.b.Event;
-import org.haw.vs.praktikum.gwln.praktikum1.b.EventManagerRestClient;
+import org.haw.vs.praktikum.gwln.events.Event;
+import org.haw.vs.praktikum.gwln.events.rest.client.EventManagerRestClient;
 import org.haw.vs.praktikum.gwln.yellowpages.YellowPagesRestClient;
 import org.haw.vsp.restopoly.services.Service;
 
@@ -50,12 +51,14 @@ public class Dice extends Service{
 			}
 			if(service != null) {
 					EventManagerRestClient events = new EventManagerRestClient(service.getUri());
-					events.postEvent(new Event(game, "Dice Roll", "Dice Event", player + " rolled a " + result, request.uri(), player, String.valueOf(System.currentTimeMillis())));
+					events.postEvent(new Event("", game, "Dice Roll", "Dice Event", player + " rolled a " + result, request.uri(), player, String.valueOf(System.currentTimeMillis())));
 					System.out.println("[!!! SUCCESS] Event erfolgreich gemeldet!");
 			} else {
 				System.out.println("[!!! WARNING] Es wurde kein Event-Service gefunden, das Event wird nicht übertragen!");
 			}
 		} catch (UnirestException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}
